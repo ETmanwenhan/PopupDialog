@@ -27,7 +27,7 @@ import Foundation
 import UIKit
 
 // Handles interactive transition triggered via pan gesture recognizer on dialog
-final internal class InteractiveTransition: UIPercentDrivenInteractiveTransition {
+final public class InteractiveTransition: UIPercentDrivenInteractiveTransition {
 
     // If the interactive transition was started
     var hasStarted = false

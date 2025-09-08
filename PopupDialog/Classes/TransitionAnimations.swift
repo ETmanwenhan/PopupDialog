@@ -39,6 +39,10 @@ import UIKit
     case bounceDown
     case zoomIn
     case fadeIn
+    case moveUp
+    case moveDown
+    /// 抽屉动画效果
+    case drawer
 }
 
 /// Dialog bounces in from bottom and is dismissed to bottom
@@ -184,3 +188,95 @@ final internal class DismissInteractiveTransition: TransitionAnimator {
         })
     }
 }
+
+/// Dialog bounces in from bottom and is dismissed to bottom
+final internal class MoveUpTransition: TransitionAnimator {
+    
+    init(direction: AnimationDirection) {
+        super.init(inDuration: 0.22, outDuration: 0.2, direction: direction)
+    }
+    
+    override func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        super.animateTransition(using: transitionContext)
+        
+        switch direction {
+        case .in:
+            to.view.bounds.origin = CGPoint(x: 0, y: -from.view.bounds.size.height)
+            UIView.animate(withDuration: outDuration, delay: 0.0, options: [.curveEaseIn], animations: {
+                self.to.view.bounds = self.from.view.bounds
+                self.to.view.alpha = 1.0
+            }, completion: { _ in
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            })
+            
+        case .out:
+            UIView.animate(withDuration: outDuration, delay: 0.0, options: [.curveEaseIn], animations: {
+                self.from.view.bounds.origin = CGPoint(x: 0, y: -self.from.view.bounds.size.height)
+                self.from.view.alpha = 0.0
+            }, completion: { _ in
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            })
+        }
+    }
+}
+
+/// Dialog bounces in from bottom and is dismissed to bottom
+final internal class MoveDownTransition: TransitionAnimator {
+    
+    init(direction: AnimationDirection) {
+        super.init(inDuration: 0.22, outDuration: 0.2, direction: direction)
+    }
+    
+    override func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        super.animateTransition(using: transitionContext)
+        
+        switch direction {
+        case .in:
+            to.view.bounds.origin = CGPoint(x: 0, y: from.view.bounds.size.height)
+            UIView.animate(withDuration: outDuration, delay: 0.0, options: [.curveEaseIn], animations: {
+                self.to.view.bounds = self.from.view.bounds
+            }, completion: { _ in
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            })
+            
+        case .out:
+            UIView.animate(withDuration: outDuration, delay: 0.0, options: [.curveEaseIn], animations: {
+                self.from.view.bounds.origin = CGPoint(x: 0, y: self.from.view.bounds.size.height)
+                self.from.view.alpha = 0.0
+            }, completion: { _ in
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            })
+        }
+    }
+}
+
+/// 自定义抽屉动画
+final internal class DrawerTransition: TransitionAnimator {
+    
+    init(direction: AnimationDirection) {
+        super.init(inDuration: 0.22, outDuration: 0.2, direction: direction)
+    }
+    
+    override func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        super.animateTransition(using: transitionContext)
+        
+        switch direction {
+        case .in:
+            to.view.bounds.origin = CGPoint(x: -from.view.bounds.size.width, y: 0)
+            UIView.animate(withDuration: inDuration, delay: 0.0, options: [.curveEaseOut], animations: {
+                self.to.view.bounds = self.from.view.bounds
+                self.to.view.alpha = 1
+            }, completion: { finished in
+                transitionContext.completeTransition(finished)
+            })
+        case .out:
+            UIView.animate(withDuration: outDuration, delay: 0.0, options: [.curveEaseIn], animations: {
+                self.from.view.bounds.origin = CGPoint(x: -self.from.view.bounds.size.width, y: 0)
+                self.from.view.alpha = 0.0
+            }, completion: { _ in
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            })
+        }
+    }
+}
+

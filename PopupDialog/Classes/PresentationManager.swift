@@ -26,23 +26,23 @@
 import Foundation
 import UIKit
 
-final internal class PresentationManager: NSObject, UIViewControllerTransitioningDelegate {
+final public class PresentationManager: NSObject, UIViewControllerTransitioningDelegate {
 
     var transitionStyle: PopupDialogTransitionStyle
     var interactor: InteractiveTransition
 
-    init(transitionStyle: PopupDialogTransitionStyle, interactor: InteractiveTransition) {
+    public init(transitionStyle: PopupDialogTransitionStyle, interactor: InteractiveTransition) {
         self.transitionStyle = transitionStyle
         self.interactor = interactor
         super.init()
     }
 
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         let presentationController = PresentationController(presentedViewController: presented, presenting: source)
         return presentationController
     }
 
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
 
         var transition: TransitionAnimator
         switch transitionStyle {
@@ -54,12 +54,18 @@ final internal class PresentationManager: NSObject, UIViewControllerTransitionin
             transition = ZoomTransition(direction: .in)
         case .fadeIn:
             transition = FadeTransition(direction: .in)
+        case .moveUp:
+            transition = MoveUpTransition(direction: .in)
+        case .moveDown:
+            transition = MoveDownTransition(direction: .in)
+        case .drawer:
+            transition = DrawerTransition(direction: .in)
         }
 
         return transition
     }
 
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
 
         if interactor.hasStarted || interactor.shouldFinish {
             return DismissInteractiveTransition()
@@ -75,12 +81,18 @@ final internal class PresentationManager: NSObject, UIViewControllerTransitionin
             transition = ZoomTransition(direction: .out)
         case .fadeIn:
             transition = FadeTransition(direction: .out)
+        case .moveUp:
+            transition = MoveUpTransition(direction: .out)
+        case .moveDown:
+            transition = MoveDownTransition(direction: .out)
+        case .drawer:
+            transition = DrawerTransition(direction: .out)
         }
 
         return transition
     }
 
-    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return interactor.hasStarted ? interactor : nil
     }
 }
